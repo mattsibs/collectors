@@ -47,7 +47,11 @@ public class FailFast {
     }
 
     public static <T> Validation<String, Stream<T>> failFast(final Stream<T> stream, final Predicate<T> checker, final String message) {
-        return new LazyValidation<>(() -> stream.anyMatch(checker) ? Validation.invalid(message) : Validation.valid(stream));
+        return new LazyValidation<>(() -> {
+            boolean match = stream.anyMatch(checker);
+            //TODO: Rethink this as test fails
+            return match ? Validation.invalid(message) : Validation.valid(stream);
+        });
     }
 
     public static <T, M> Collector<T, MutableFail<M, List<T>>, Validation<M, List<T>>> collect(

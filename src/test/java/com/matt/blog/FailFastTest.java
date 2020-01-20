@@ -30,4 +30,18 @@ public class FailFastTest {
 
         assertThat(iteratedValues).containsOnly(1, 3, 4);
     }
+
+    @Test
+    public void failFastStream_OddNumbers_DoesNotFail() {
+        Stream<Integer> stream = Stream.of(1, 3, 5, 7, 9);
+
+        Validation<String, List<Integer>> result = FailFast
+                .failFast(stream, integer -> integer % 2 == 0, "Only odd values please")
+                .map(integerStream -> integerStream.collect(Collectors.toList()));
+
+        assertThat(result.isValid())
+                .isEqualTo(true);
+
+        assertThat(result.get()).containsOnly(1, 3, 5, 7, 9);
+    }
 }
